@@ -28,19 +28,17 @@ namespace scc {
             std::string name;
             std::vector<Node *> edges{};
             std::vector<Node *> dual_edges{};
-            size_t post_order = 0;
             bool visited = false;
 
             explicit Node(std::string name) : name(std::move(name)) {}
 
-            void dual_dfs(size_t &order) {
+            void dual_dfs(std::vector<Node *> &acc) {
                 if (visited) return;
                 visited = true;
-                order++;
                 for (auto i: dual_edges) {
-                    i->dual_dfs(order);
+                    i->dual_dfs(acc);
                 }
-                post_order = order;
+                acc.push_back(this);
             }
 
             void primal_dfs(std::vector<Node *> &acc) {
@@ -55,36 +53,27 @@ namespace scc {
 
         std::unordered_map<std::string, Node> nodes;
 
-        void dual_dfs() {
-            size_t global_order = 0;
+        std::vector<Node *> dual_dfs() {
+            std::vector<Node *> ordered_nodes{};
             for (auto &i: nodes) {
-                i.second.dual_dfs(global_order);
+                i.second.dual_dfs(ordered_nodes);
             }
             for (auto &i: nodes) {
                 i.second.visited = false;
             }
-        }
-
-        std::vector<Node *> topological_order() {
-            std::vector<Node *> ordered_nodes{};
-            for (auto &i: nodes) {
-                ordered_nodes.push_back(&i.second);
-            }
-            std::sort(ordered_nodes.begin(), ordered_nodes.end(), [](Node *x, Node *y) {
-                return x->post_order > y->post_order;
-            });
             return ordered_nodes;
-        };
+        }
 
     public:
         std::vector<std::vector<std::string>> scc() {
             dual_dfs();
             std::vector<std::vector<std::string>> result;
-            for (auto i: topological_order()) {
-                if (!i->visited) {
+            auto reversed_topological_order = dual_dfs();
+            for (auto i = reversed_topological_order.rbegin(); i != reversed_topological_order.rend(); ++i) {
+                if (!(*i)->visited) {
                     result.emplace_back();
                     std::vector<Node *> subgraph{};
-                    i->primal_dfs(subgraph);
+                    (*i)->primal_dfs(subgraph);
                     for (auto j: subgraph) {
                         result.back().push_back(j->name);
                     }

@@ -21,8 +21,3 @@ So in the dual graph, there is an edge from Y to X. Consider the following two c
    higher post order.
 
 Therefore, both cases guarantee that the node with the highest post order must be in a sink SCC.
-
-## Notice
-The sink SCC algorithm enjoys O(n) complexity in paper. However, here we sort the nodes in topological order with
-`std::sort`, which undermines the complexity claim. It is just because I don't bother to let the usage of 
-some linear sorting hacks to increase the burden of understanding.
