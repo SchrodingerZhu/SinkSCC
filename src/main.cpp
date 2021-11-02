@@ -32,4 +32,36 @@ int main() {
             std::cout << std::endl;
         }
     }
+
+    {
+        std::vector<size_t> nodes{
+               0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+        };
+        Graph<size_t , VectorType> graph{nodes.begin(), nodes.end()};
+        graph.connect(1, 2);
+        graph.connect(2, 4);
+        graph.connect(2, 5);
+        graph.connect(2, 3);
+        graph.connect(3, 6);
+        graph.connect(5, 2);
+        graph.connect(5, 6);
+        graph.connect(5, 7);
+        graph.connect(6, 3);
+        graph.connect(6, 8);
+        graph.connect(7, 8);
+        graph.connect(7, 10);
+        graph.connect(8, 11);
+        graph.connect(9, 7);
+        graph.connect(10, 9);
+        graph.connect(11, 12);
+        graph.connect(12, 10);
+        auto scc = graph.scc();
+        for (auto &i: scc) {
+            for (auto &j: i) {
+                std::cout << j << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
+    return 0;
 }
